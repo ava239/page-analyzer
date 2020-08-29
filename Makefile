@@ -41,16 +41,19 @@ compose-up:
 	docker-compose up
 
 compose-test:
-	docker-compose run web make test
+	docker-compose run app make test
 
 compose-bash:
-	docker-compose run web bash
+	docker-compose run app bash
 
 compose-setup: compose-build
-	docker-compose run web make setup
+	docker-compose run app make setup
 
 compose-build:
 	docker-compose build
+
+compose-migrate:
+	docker-compose run app make migrate
 
 compose-db:
 	docker-compose exec db psql -U postgres
