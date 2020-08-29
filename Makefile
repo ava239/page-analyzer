@@ -35,6 +35,9 @@ lint-fix:
 	composer phpcbf
 
 compose:
+	heroku local -f Procfile.dev
+
+compose-up:
 	docker-compose up
 
 compose-test:
