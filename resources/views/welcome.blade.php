@@ -32,7 +32,7 @@
                     <a class="nav-link active" href="{{ route('welcome') }}">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link " href="{{ request()->getSchemeAndHttpHost() }}/domains">Domains</a>
+                    <a class="nav-link " href="{{ route('domains.index') }}">Domains</a>
                 </li>
             </ul>
         </div>
@@ -40,14 +40,16 @@
 </header>
 
 <main class="flex-grow-1">
+    @include('flash::message')
     <div class="jumbotron jumbotron-fluid bg-dark">
         <div class="container-lg">
             <div class="row">
                 <div class="col-12 col-md-10 col-lg-8 mx-auto text-white">
                     <h1 class="display-3">Page Analyzer</h1>
                     <p class="lead">Check web pages for free</p>
-                    <form action="{{ request()->getSchemeAndHttpHost() }}/domains" method="post" class="d-flex justify-content-center">
-                        <input type="text" name="domain[name]" value="" class="form-control form-control-lg" placeholder="https://www.example.com">
+                    <form action="{{ route('domains.store') }}" method="post" class="d-flex justify-content-center">
+                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                        <input type="text" name="domain[name]" value="{{ old('domain.name') }}" class="form-control form-control-lg" placeholder="https://www.example.com">
                         <button type="submit" class="btn btn-lg btn-primary ml-3 px-5 text-uppercase">Check</button>
                     </form>
                 </div>
