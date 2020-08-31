@@ -30,10 +30,10 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <a class="nav-link @if(request()->route()->getName() === 'welcome') active @endif" href="{{ route('welcome') }}">Home</a>
+                    <a class="nav-link @if(Route::is('welcome')) active @endif" href="{{ route('welcome') }}">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link @if(request()->route()->getName() === 'domains.index') active @endif" href="{{ route('domains.index') }}">Domains</a>
+                    <a class="nav-link @if(Route::is('domains.index')) active @endif" href="{{ route('domains.index') }}">Domains</a>
                 </li>
             </ul>
         </div>
