@@ -91,6 +91,14 @@ return [
             'prefix_indexes' => true,
         ],
 
+        'sqlite_testing' => [
+            'driver' => 'sqlite',
+            'url' => env('TEST_DATABASE_URL'),
+            'database' => env('TEST_DB_DATABASE', ':memory:'),
+            'prefix' => '',
+            'foreign_key_constraints' => env('TEST_DB_FOREIGN_KEYS', true),
+        ],
+
     ],
 
     /*
