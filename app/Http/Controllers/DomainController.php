@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Validator;
 
 class DomainController extends Controller
 {
@@ -16,10 +16,15 @@ class DomainController extends Controller
 
     public function store(Request $request)
     {
-        try {
-            $this->validate($request, ['domain.name' => 'required|url']);
-        } catch (ValidationException $e) {
-            flash('Not valid url')->error();
+        $messages = [
+            'domain.name.url' => 'Not valid url.',
+            'domain.name.required' => 'Domain name should not be empty.'
+        ];
+        $validator = Validator::make($request->all(), ['domain.name' => 'required|url'], $messages);
+        if ($validator->fails()) {
+            foreach ($validator->errors()->all() as $message) {
+                flash($message)->error();
+            }
             return back()->withInput();
         }
         $url = parse_url($request->input('domain.name'));
