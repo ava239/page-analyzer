@@ -14,7 +14,7 @@ class DomainController extends Controller
             ->selectRaw('domains.*, MAX(domain_checks.created_at) last_check, domain_checks.status_code')
             ->leftJoin('domain_checks', 'domains.id', '=', 'domain_checks.domain_id')
             ->groupBy('domains.id', 'domain_checks.status_code')
-            ->orderByRaw('last_check DESC, domains.id')
+            ->orderByDesc('last_check')
             ->get();
         return view('domains.index', ['domains' => $domains]);
     }
