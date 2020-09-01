@@ -10,7 +10,12 @@ class DomainController extends Controller
 {
     public function index()
     {
-        $domains = DB::table('domains')->get();
+        $domains = DB::table('domains')
+            ->selectRaw('domains.*, MAX(domain_checks.created_at) last_check, domain_checks.status_code')
+            ->leftJoin('domain_checks', 'domains.id', '=', 'domain_checks.domain_id')
+            ->groupBy('domains.id', 'domain_checks.status_code')
+            ->orderByRaw('last_check DESC NULLS LAST')
+            ->get();
         return view('domains.index', ['domains' => $domains]);
     }
 
@@ -52,6 +57,10 @@ class DomainController extends Controller
         if (!$domain) {
             abort(404);
         }
-        return view('domains.show', ['domain' => $domain]);
+        $domainChecks = DB::table('domain_checks')
+            ->where('domain_id', $id)
+            ->orderByDesc('created_at')
+            ->get();
+        return view('domains.show', ['domain' => $domain, 'checks' => $domainChecks]);
     }
 }

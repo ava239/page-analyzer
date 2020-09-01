@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 
-class DomainControllerTest extends TestCase
+class DomainTest extends TestCase
 {
     use DatabaseMigrations;
 
