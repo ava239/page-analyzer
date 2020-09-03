@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 
 class DomainCheckController extends Controller
 {
@@ -12,8 +13,10 @@ class DomainCheckController extends Controller
         if (!$domain) {
             abort(404);
         }
+        $response = Http::get($domain->name);
         DB::table('domain_checks')->insert([
             'domain_id' => $id,
+            'status_code' => $response->status(),
             'created_at' => now(),
             'updated_at' => now(),
         ]);
