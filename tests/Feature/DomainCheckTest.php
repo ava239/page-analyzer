@@ -17,8 +17,8 @@ class DomainCheckTest extends TestCase
     public function testStore()
     {
         $lastSeededId = $this->seedFakeData();
-        $testHtml = file_get_contents(self::FIXTURES_PATH . 'page.html');
 
+        $testHtml = file_get_contents(self::FIXTURES_PATH . 'page.html');
         Http::fake([
             '*' => Http::response($testHtml, 200),
         ]);
@@ -33,5 +33,12 @@ class DomainCheckTest extends TestCase
             'keywords' => 'tests, page, analyzer',
             'description' => 'page tester',
         ]);
+    }
+
+    public function testError()
+    {
+        Http::fake();
+        $response = $this->post(route('domains.checks.store', 1));
+        $response->assertNotFound();
     }
 }

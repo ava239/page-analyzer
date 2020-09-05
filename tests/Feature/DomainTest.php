@@ -29,6 +29,12 @@ class DomainTest extends TestCase
         $response->assertRedirect();
 
         $this->assertDatabaseHas('domains', ['name' => $this->normalizeUrl($url)]);
+
+        $response = $this->post(route('domains.store'), $data);
+        $response->assertSessionHas('flash_notification.0.message');
+
+        $response = $this->post(route('domains.store'), []);
+        $response->assertSessionHas('flash_notification.0.message');
     }
 
     public function testShow()
@@ -36,5 +42,8 @@ class DomainTest extends TestCase
         $lastSeededId = $this->seedFakeData();
         $response = $this->get(route('domains.show', $lastSeededId));
         $response->assertOk();
+
+        $response = $this->get(route('domains.show', $lastSeededId + 1));
+        $response->assertNotFound();
     }
 }
