@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Database\Query\JoinClause;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -11,26 +12,14 @@ class DomainController extends Controller
     public function index()
     {
         $domains = DB::table('domains')
-            ->selectSub(
-                function ($query) {
-                    $query->select('status_code')
-                        ->from('domain_checks')
-                        ->whereColumn('domain_id', 'domains.id')
-                        ->orderByDesc('created_at')
-                        ->limit(1);
-                },
-                'status_code'
-            )->selectSub(
-                function ($query) {
-                    $query->select('created_at')
-                        ->from('domain_checks')
-                        ->whereColumn('domain_id', 'domains.id')
-                        ->orderByDesc('created_at')
-                        ->limit(1);
-                },
-                'last_check'
-            )
-            ->addSelect('domains.*')
+            ->selectRaw('domains.*, domain_checks.created_at last_check, domain_checks.status_code')
+            ->leftJoin('domain_checks', 'domains.id', '=', 'domain_checks.domain_id')
+            ->leftJoin('domain_checks as dc_limit', function (JoinClause $join) {
+                $join
+                    ->on('domains.id', '=', 'dc_limit.domain_id')
+                    ->on('dc_limit.created_at', '>', 'domain_checks.created_at');
+            })
+            ->whereNull('dc_limit.id')
             ->orderByDesc('last_check')
             ->get();
         return view('domains.index', ['domains' => $domains]);
