@@ -12,7 +12,7 @@ class DomainController extends Controller
     public function index()
     {
         $domains = DB::table('domains')
-            ->selectRaw('domains.*, domain_checks.created_at last_check, domain_checks.status_code')
+            ->select(['domains.*', 'domain_checks.created_at as last_check', 'domain_checks.status_code'])
             ->leftJoin('domain_checks', 'domains.id', '=', 'domain_checks.domain_id')
             ->leftJoin('domain_checks as dc_limit', function (JoinClause $join) {
                 $join
@@ -29,18 +29,13 @@ class DomainController extends Controller
     {
         $validator = Validator::make($request->all(), ['domain.name' => 'required|url']);
         if ($validator->fails()) {
-            foreach ($validator->errors()->all() as $message) {
-                flash($message)->error();
-            }
+            collect($validator->errors()->all())->map(fn($message) => flash($message)->error());
             return back()->withInput();
         }
         $url = parse_url($request->input('domain.name'));
         $normalizedUrl = strtolower("{$url['scheme']}://{$url['host']}");
         $currentId = DB::table('domains')->where('name', $normalizedUrl)->value('id');
         if ($currentId) {
-            DB::table('domains')
-                ->where('id', $currentId)
-                ->update(['updated_at' => now()]);
             flash('Url already exists')->info();
             return redirect()->route('domains.show', $currentId);
         }
