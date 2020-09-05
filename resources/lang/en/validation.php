@@ -130,8 +130,9 @@ return [
     */
 
     'custom' => [
-        'attribute-name' => [
-            'rule-name' => 'custom-message',
+        'domain.name' => [
+            'url' => 'Not valid url.',
+            'required' => 'Domain name should not be empty.'
         ],
     ],
 

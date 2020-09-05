@@ -38,11 +38,7 @@ class DomainController extends Controller
 
     public function store(Request $request)
     {
-        $messages = [
-            'domain.name.url' => 'Not valid url.',
-            'domain.name.required' => 'Domain name should not be empty.'
-        ];
-        $validator = Validator::make($request->all(), ['domain.name' => 'required|url'], $messages);
+        $validator = Validator::make($request->all(), ['domain.name' => 'required|url']);
         if ($validator->fails()) {
             foreach ($validator->errors()->all() as $message) {
                 flash($message)->error();
