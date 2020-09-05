@@ -2,26 +2,18 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Support\Facades\DB;
+use Tests\FakeDataSeeder;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 
 class DomainTest extends TestCase
 {
     use DatabaseMigrations;
-
-    private $lastDomainId;
-
-    public function setUp(): void
-    {
-        parent::setUp();
-        for ($i = 0; $i < 20; $i++) {
-            $this->lastDomainId = $this->addFakeDomain();
-        }
-    }
+    use FakeDataSeeder;
 
     public function testIndex()
     {
+        $this->seedFakeData();
         $response = $this->get(route('domains.index'));
         $response->assertOk();
     }
@@ -41,23 +33,8 @@ class DomainTest extends TestCase
 
     public function testShow()
     {
-        $response = $this->get(route('domains.show', $this->lastDomainId));
+        $lastSeededId = $this->seedFakeData();
+        $response = $this->get(route('domains.show', $lastSeededId));
         $response->assertOk();
-    }
-
-    private function normalizeUrl($url)
-    {
-        $parsedUrl = parse_url($url);
-        return strtolower("{$parsedUrl['scheme']}://{$parsedUrl['host']}");
-    }
-
-    private function addFakeDomain()
-    {
-        $url = $this->faker->url;
-        return DB::table('domains')->insertGetId([
-            'name' => $this->normalizeUrl($url),
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
     }
 }
