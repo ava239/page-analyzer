@@ -10,8 +10,15 @@ setup:
 	php artisan db:seed
 	npm install
 
-watch:
-	npm run watch
+docker-setup:
+	composer install
+	cp -n .env.postgres .env|| true
+	php artisan key:gen --ansi
+	npm install
+	docker-compose build
+	docker-compose up -d && docker-compose run app make migrate
+	docker-compose run app php artisan db:seed
+	docker-compose down
 
 migrate:
 	php artisan migrate
@@ -42,9 +49,6 @@ compose:
 
 compose-up:
 	docker-compose up
-
-compose-test:
-	docker-compose run app make test
 
 compose-bash:
 	docker-compose run app bash
