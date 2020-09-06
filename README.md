@@ -7,7 +7,7 @@ https://ava-page-analyzer.herokuapp.com/
 
 # Description
 SEO page analyzer. Made on Laravel.  
-Check domain availability, track SEO values (H1, Keywords, Description) history  
+Check domain availability, track SEO attributes (H1, Keywords, Description) history  
 Ready to deploy on Heroku
 
 # Requirements
