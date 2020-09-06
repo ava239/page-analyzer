@@ -34,11 +34,4 @@ class DomainCheckTest extends TestCase
             'description' => 'page tester',
         ]);
     }
-
-    public function testError()
-    {
-        Http::fake();
-        $response = $this->post(route('domains.checks.store', 1));
-        $response->assertNotFound();
-    }
 }
