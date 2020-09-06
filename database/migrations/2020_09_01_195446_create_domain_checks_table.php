@@ -13,9 +13,6 @@ class CreateDomainChecksTable extends Migration
      */
     public function up()
     {
-        /*
-         * Создайте таблицу domain_checks. Поля: id, domain_id, status_code, h1, keywords, description, updated_at, created_at.
-         */
         Schema::create('domain_checks', function (Blueprint $table) {
             $table->id();
             $table->foreignId('domain_id')->constrained();
