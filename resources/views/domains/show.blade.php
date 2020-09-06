@@ -23,7 +23,7 @@
             </table>
         </div>
         <h2 class="mt-5 mb-3">Checks</h2>
-        <form method="post" action="/domains/{{ $domain->id }}/checks">
+        <form method="post" action="{{ route('domains.checks.store', $domain->id) }}">
             <input type="hidden" name="_token" value="{{ csrf_token() }}">
             <input type="submit" class="btn btn-primary" value="Run check">
         </form>
