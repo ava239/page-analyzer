@@ -27,8 +27,8 @@ class DomainController extends Controller
             ];
 
             return $currentDomainChecks->whenEmpty(
-                fn($collection) => $emptyCheck,
-                fn($collection) => (array) $collection->first()
+                fn() => $emptyCheck,
+                fn($checksList) => (array) $checksList->first()
             );
         });
 
