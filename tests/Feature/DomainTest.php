@@ -2,18 +2,17 @@
 
 namespace Tests\Feature;
 
-use Tests\FakeDataSeeder;
+use FakeDataSeeder;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 
 class DomainTest extends TestCase
 {
-    use DatabaseMigrations;
-    use FakeDataSeeder;
+    use RefreshDatabase;
 
     public function testIndex()
     {
-        $this->seedFakeData();
+        $this->seed(FakeDataSeeder::class);
         $response = $this->get(route('domains.index'));
         $response->assertOk();
     }
@@ -28,13 +27,13 @@ class DomainTest extends TestCase
         $response->assertSessionHasNoErrors();
         $response->assertRedirect();
 
-        $this->assertDatabaseHas('domains', ['name' => $this->normalizeUrl($url)]);
+        $this->assertDatabaseHas('domains', ['name' => normalizeUrl($url)]);
     }
 
     public function testShow()
     {
-        $lastSeededId = $this->seedFakeData();
-        $response = $this->get(route('domains.show', $lastSeededId));
+        $this->seed(FakeDataSeeder::class);
+        $response = $this->get(route('domains.show', 1));
         $response->assertOk();
     }
 }
