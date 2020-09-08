@@ -37,6 +37,7 @@ deploy:
 
 lint:
 	composer phpcs
+	composer exec --verbose phpstan analyse
 
 lint-fix:
 	composer phpcbf
