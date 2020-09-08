@@ -13,7 +13,8 @@ use Illuminate\Support\Facades\Artisan;
 | simple approach to interacting with each command's IO methods.
 |
 */
-
+/** @var \Illuminate\Console\Command $this */
 Artisan::command('inspire', function () {
+    /** @var \Illuminate\Console\Command $this */
     $this->comment(Inspiring::quote());
 })->describe('Display an inspiring quote');

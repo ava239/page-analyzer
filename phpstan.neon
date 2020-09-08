@@ -5,10 +5,17 @@ parameters:
 
     paths:
         - app
+        - database
+        - config
+        - resources
+        - routes
+        - tests
 
     level: 5
 
-    excludes_analyse:
-        - ./*/*/FileToBeExcluded.php
+    ignoreErrors:
+        -
+            message: '#Variable \$factory might not be defined.#'
+            path: database/factories/*
 
     checkMissingIterableValueType: false
