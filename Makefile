@@ -16,9 +16,6 @@ docker-setup:
 	php artisan key:gen --ansi
 	npm install
 	docker-compose build
-	docker-compose up -d && docker-compose run app make migrate
-	docker-compose run app php artisan db:seed
-	docker-compose down
 
 migrate:
 	php artisan migrate

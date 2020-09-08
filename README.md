@@ -55,3 +55,7 @@ $ php artisan db:seed
 $ make docker-setup
 $ make compose-up
 ```
+First run you should wait until containers are fully up, postgres may take some time to create database, then you have to run database migrations.  
+``` sh
+$ make compose-migrate
+```
