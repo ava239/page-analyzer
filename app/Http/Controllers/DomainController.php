@@ -29,23 +29,26 @@ class DomainController extends Controller
     {
         $validator = Validator::make($request->all(), ['domain.name' => 'required|url']);
         if ($validator->fails()) {
-            collect($validator->errors()->all())->map(fn($message) => flash($message)->error());
+            $errors = collect($validator->errors()->all());
+            $errors->map(fn($message) => flash($message)->error());
             return back()->withInput();
         }
-        $url = parse_url($request->input('domain.name'));
-        $normalizedUrl = strtolower("{$url['scheme']}://{$url['host']}");
-        $currentId = DB::table('domains')->where('name', $normalizedUrl)->value('id');
-        if ($currentId) {
+
+        $normalizedUrl = normalizeUrl($request->input('domain.name'));
+        $domain = DB::table('domains')->where('name', $normalizedUrl)->first();
+
+        if ($domain) {
             flash('Url already exists')->info();
-            return redirect()->route('domains.show', $currentId);
+            return redirect()->route('domains.show', $domain->id);
         }
-        $newId = DB::table('domains')->insertGetId([
+
+        $id = DB::table('domains')->insertGetId([
             'name' => $normalizedUrl,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
         flash('Url has been added')->success();
-        return redirect()->route('domains.show', $newId);
+        return redirect()->route('domains.show', $id);
     }
 
     public function show($id)
