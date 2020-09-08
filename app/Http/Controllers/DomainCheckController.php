@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use DiDom\Document;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 
@@ -14,7 +15,12 @@ class DomainCheckController extends Controller
         if (!$domain) {
             abort(404);
         }
-        $response = Http::get($domain->name);
+        try {
+            $response = Http::get($domain->name);
+        } catch (ConnectionException $exception) {
+            flash('Check error. Url could not be resolved')->error();
+            return back();
+        }
         $dom = new Document();
         if ($response->body()) {
             $dom->loadHtml($response->body());
