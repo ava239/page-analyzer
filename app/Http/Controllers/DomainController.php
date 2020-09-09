@@ -11,30 +11,25 @@ class DomainController extends Controller
     public function index()
     {
         $domains = DB::table('domains')->get();
-        $checks = DB::table('domain_checks')
-            ->select(['created_at','status_code','domain_id'])
+        $latestDomainChecks = DB::table('domain_checks')
+            ->select()
             ->distinct('domain_id')
             ->orderBy('domain_id')
             ->orderByDesc('created_at')
             ->get();
 
-        $domainChecks = $domains->map(function ($domain) use ($checks) {
-            $currentDomainChecks = $checks->where('domain_id', $domain->id);
-            $emptyCheck = [
-                'created_at' => '-',
-                'status_code' => '-',
+        $latestChecksResults = $domains->map(function ($domain) use ($latestDomainChecks) {
+            $domainCheck = $latestDomainChecks->where('domain_id', $domain->id)->first();
+            return [
+                'created_at' => optional($domainCheck)->created_at,
+                'status_code' => optional($domainCheck)->status_code,
                 'domain_id' => $domain->id
             ];
-
-            return $currentDomainChecks->whenEmpty(
-                fn() => $emptyCheck,
-                fn($checksList) => (array) $checksList->first()
-            );
         });
 
         return view('domains.index', [
             'domains' => $domains,
-            'domainChecks' => $domainChecks->keyBy('domain_id'),
+            'checkResultsByDomain' => $latestChecksResults->keyBy('domain_id'),
         ]);
     }
 
@@ -42,8 +37,9 @@ class DomainController extends Controller
     {
         $validator = Validator::make($request->all(), ['domain.name' => 'required|url']);
         if ($validator->fails()) {
-            $errors = collect($validator->errors()->all());
-            $errors->map(fn($message) => flash($message)->error());
+            foreach ($validator->errors()->all() as $message) {
+                flash($message)->error();
+            }
             return back()->withInput();
         }
 
