@@ -18,7 +18,7 @@ class DomainController extends Controller
             ->orderByDesc('created_at')
             ->get();
 
-        $latestChecksResults = $domains->map(function ($domain) use ($latestDomainChecks) {
+        $latestCheckResults = $domains->map(function ($domain) use ($latestDomainChecks) {
             $domainCheck = $latestDomainChecks->where('domain_id', $domain->id)->first();
             return [
                 'created_at' => optional($domainCheck)->created_at,
@@ -29,7 +29,7 @@ class DomainController extends Controller
 
         return view('domains.index', [
             'domains' => $domains,
-            'checkResultsByDomain' => $latestChecksResults->keyBy('domain_id'),
+            'checkResultsByDomain' => $latestCheckResults->keyBy('domain_id'),
         ]);
     }
 
