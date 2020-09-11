@@ -16,10 +16,11 @@ class DomainController extends Controller
             ->distinct('domain_id')
             ->orderBy('domain_id')
             ->orderByDesc('created_at')
-            ->get();
+            ->get()
+            ->keyBy('domain_id');
 
         $latestCheckResults = $domains->map(function ($domain) use ($latestDomainChecks) {
-            $domainCheck = $latestDomainChecks->where('domain_id', $domain->id)->first();
+            $domainCheck = $latestDomainChecks->get($domain->id);
             return [
                 'created_at' => optional($domainCheck)->created_at,
                 'status_code' => optional($domainCheck)->status_code,
@@ -63,9 +64,7 @@ class DomainController extends Controller
     public function show($id)
     {
         $domain = DB::table('domains')->where('id', $id)->first();
-        if (!$domain) {
-            abort(404);
-        }
+        abort_unless($domain !== null, 404);
         $domainChecks = DB::table('domain_checks')
             ->where('domain_id', $id)
             ->orderByDesc('created_at')
