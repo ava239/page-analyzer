@@ -3,12 +3,10 @@
 namespace Tests\Feature;
 
 use FakeDataSeeder;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class DomainTest extends TestCase
 {
-    use RefreshDatabase;
 
     public function testIndex()
     {

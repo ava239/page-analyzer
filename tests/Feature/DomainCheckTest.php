@@ -3,13 +3,11 @@
 namespace Tests\Feature;
 
 use FakeDataSeeder;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 class DomainCheckTest extends TestCase
 {
-    use RefreshDatabase;
 
     private const FIXTURES_PATH = __DIR__ . '/../fixtures/';
 
