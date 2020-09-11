@@ -34,7 +34,10 @@ class ProcessDomainCheck implements ShouldQueue
             flash("Check error. Could not resolve '{$this->domain->name}'")->error();
             return;
         }
-        $dom = new Document($response->body());
+        $dom = new Document();
+        if ($response->body() !== '') {
+            $dom->loadHtml($response->body());
+        }
         $domainCheckData = [
             'domain_id' => $this->domain->id,
             'status_code' => $response->status(),
