@@ -2,15 +2,28 @@
 
 namespace Tests\Feature;
 
-use FakeDataSeeder;
+use DB;
 use Tests\TestCase;
 
 class DomainTest extends TestCase
 {
 
+    public function setUp(): void
+    {
+        parent::setUp();
+        $domainCount = 20;
+        for ($i = 0; $i < $domainCount; $i++) {
+            $url = $this->faker->url;
+            DB::table('domains')->insert([
+                'name' => normalizeUrl($url),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+    }
+
     public function testIndex()
     {
-        $this->seed(FakeDataSeeder::class);
         $response = $this->get(route('domains.index'));
         $response->assertOk();
     }
@@ -30,7 +43,6 @@ class DomainTest extends TestCase
 
     public function testShow()
     {
-        $this->seed(FakeDataSeeder::class);
         $response = $this->get(route('domains.show', 1));
         $response->assertOk();
     }

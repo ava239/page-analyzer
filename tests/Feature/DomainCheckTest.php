@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use FakeDataSeeder;
+use DB;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
@@ -13,7 +13,12 @@ class DomainCheckTest extends TestCase
 
     public function testStore()
     {
-        $this->seed(FakeDataSeeder::class);
+        $url = $this->faker->url;
+        DB::table('domains')->insert([
+            'name' => normalizeUrl($url),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
         $testHtml = file_get_contents(self::FIXTURES_PATH . 'page.html');
         Http::fake([
             '*' => Http::response($testHtml, 200),
