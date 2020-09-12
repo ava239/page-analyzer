@@ -14,7 +14,7 @@ class DomainCheckTest extends TestCase
     public function testStore()
     {
         $url = $this->faker->url;
-        DB::table('domains')->insert([
+        $domainId = DB::table('domains')->insertGetId([
             'name' => normalizeUrl($url),
             'created_at' => now(),
             'updated_at' => now(),
@@ -24,7 +24,7 @@ class DomainCheckTest extends TestCase
             '*' => Http::response($testHtml, 200),
         ]);
 
-        $response = $this->post(route('domains.checks.store', 1));
+        $response = $this->post(route('domains.checks.store', $domainId));
 
         $response->assertRedirect();
         $response->assertSessionHasNoErrors();
