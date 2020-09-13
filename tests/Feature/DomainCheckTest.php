@@ -10,6 +10,12 @@ class DomainCheckTest extends TestCase
 
     private const FIXTURES_PATH = __DIR__ . '/../fixtures/';
 
+    public function setUp(): void
+    {
+        parent::setUp();
+        generateDomainsForTesting();
+    }
+
     public function testStore()
     {
         $testHtml = file_get_contents(self::FIXTURES_PATH . 'page.html');

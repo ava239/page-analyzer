@@ -2,10 +2,18 @@
 
 namespace Tests\Feature;
 
+use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class DomainTest extends TestCase
 {
+    use WithFaker;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+        generateDomainsForTesting();
+    }
 
     public function testIndex()
     {
