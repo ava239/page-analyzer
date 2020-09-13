@@ -2,25 +2,10 @@
 
 namespace Tests\Feature;
 
-use DB;
 use Tests\TestCase;
 
 class DomainTest extends TestCase
 {
-
-    public function setUp(): void
-    {
-        parent::setUp();
-        $domainCount = 20;
-        for ($i = 0; $i < $domainCount; $i++) {
-            $url = $this->faker->url;
-            DB::table('domains')->insert([
-                'name' => normalizeUrl($url),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-        }
-    }
 
     public function testIndex()
     {
@@ -43,7 +28,8 @@ class DomainTest extends TestCase
 
     public function testShow()
     {
-        $response = $this->get(route('domains.show', 1));
+        $domainId = 1;
+        $response = $this->get(route('domains.show', $domainId));
         $response->assertOk();
     }
 }
