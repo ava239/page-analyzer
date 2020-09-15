@@ -9,7 +9,7 @@ class DomainCheckController extends Controller
 {
     public function store($id)
     {
-        $domain = DB::table('domains')->where('id', $id)->first();
+        $domain = DB::table('domains')->find($id);
         abort_unless($domain !== null, 404);
         ProcessDomainCheck::dispatch($domain);
         return redirect()->route('domains.show', $id);

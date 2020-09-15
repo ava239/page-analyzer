@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
+use function App\Helpers\normalizeUrl;
+
 class DomainController extends Controller
 {
     public function index()

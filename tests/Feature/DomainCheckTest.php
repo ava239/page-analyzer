@@ -2,8 +2,11 @@
 
 namespace Tests\Feature;
 
+use DB;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
+
+use function Tests\Helpers\generateDomainsForTesting;
 
 class DomainCheckTest extends TestCase
 {
@@ -23,13 +26,13 @@ class DomainCheckTest extends TestCase
             '*' => Http::response($testHtml, 200),
         ]);
 
-        $domainId = 1;
-        $response = $this->post(route('domains.checks.store', $domainId));
+        $domain = DB::table('domains')->inRandomOrder()->first();
+        $response = $this->post(route('domains.checks.store', $domain->id));
 
         $response->assertRedirect();
         $response->assertSessionHasNoErrors();
         $this->assertDatabaseHas('domain_checks', [
-            'domain_id' => $domainId,
+            'domain_id' => $domain->id,
             'h1' => 'test page',
             'keywords' => 'tests, page, analyzer',
             'description' => 'page tester',

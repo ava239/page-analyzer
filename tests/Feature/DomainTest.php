@@ -2,8 +2,12 @@
 
 namespace Tests\Feature;
 
+use DB;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
+
+use function App\Helpers\normalizeUrl;
+use function Tests\Helpers\generateDomainsForTesting;
 
 class DomainTest extends TestCase
 {
@@ -36,8 +40,8 @@ class DomainTest extends TestCase
 
     public function testShow()
     {
-        $domainId = 1;
-        $response = $this->get(route('domains.show', $domainId));
+        $domain = DB::table('domains')->inRandomOrder()->first();
+        $response = $this->get(route('domains.show', $domain->id));
         $response->assertOk();
     }
 }
