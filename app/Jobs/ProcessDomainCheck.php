@@ -28,26 +28,28 @@ class ProcessDomainCheck implements ShouldQueue
 
     public function handle()
     {
-        try {
-            $response = Http::get($this->domain->name);
-        } catch (ConnectionException $exception) {
-            flash("Check error. Could not resolve '{$this->domain->name}'")->error();
-            return;
-        }
-        $dom = new Document();
-        if ($response->body() !== '') {
-            $dom->loadHtml($response->body());
-        }
         $domainCheckData = [
             'domain_id' => $this->domain->id,
-            'status_code' => $response->status(),
-            'h1' => optional($dom->first('h1'))->text(),
-            'keywords' => optional($dom->first('meta[name="keywords"]'))->content,
-            'description' => optional($dom->first('meta[name="description"]'))->content,
             'created_at' => now(),
             'updated_at' => now(),
         ];
-        DB::table('domain_checks')->insert($domainCheckData);
-        flash("Website '{$this->domain->name}' has been checked!")->success();
+        $domainCheckId = DB::table('domain_checks')->insertGetId($domainCheckData);
+        $dom = new Document();
+        try {
+            $response = Http::get($this->domain->name);
+            if ($response->body() !== '') {
+                $dom->loadHtml($response->body());
+            }
+            $checkResult = [
+                'check_status' => 'ok',
+                'status_code' => $response->status(),
+                'h1' => optional($dom->first('h1'))->text(),
+                'keywords' => optional($dom->first('meta[name="keywords"]'))->content,
+                'description' => optional($dom->first('meta[name="description"]'))->content,
+            ];
+        } catch (ConnectionException $exception) {
+            $checkResult = ['check_status' => 'check_error'];
+        }
+        DB::table('domain_checks')->where('id', $domainCheckId)->update($checkResult);
     }
 }

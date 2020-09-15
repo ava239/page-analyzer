@@ -31,6 +31,7 @@
         <table class="table table-bordered table-hover text-nowrap">
             <tr>
                 <th>Id</th>
+                <th>Check Status</th>
                 <th>Status Code</th>
                 <th>h1</th>
                 <th>Keywords</th>
@@ -40,6 +41,7 @@
             @foreach($checks as $check)
                 <tr>
                     <th>{{ $check->id }}</th>
+                    <th>{{  __(sprintf('domain.check_status.%s', $check->check_status)) }}</th>
                     <th>{{ $check->status_code }}</th>
                     <th class="text-wrap">{{ $check->h1 }}</th>
                     <th class="text-wrap">{{ $check->keywords }}</th>

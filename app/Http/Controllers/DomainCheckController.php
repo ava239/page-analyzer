@@ -12,6 +12,7 @@ class DomainCheckController extends Controller
         $domain = DB::table('domains')->find($id);
         abort_unless($domain !== null, 404);
         ProcessDomainCheck::dispatch($domain);
+        flash('Domain check scheduled')->info();
         return redirect()->route('domains.show', $id);
     }
 }

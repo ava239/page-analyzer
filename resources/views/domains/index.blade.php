@@ -8,6 +8,7 @@
                     <th>ID</th>
                     <th>Name</th>
                     <th>Last check</th>
+                    <th>Check Status</th>
                     <th>Status Code</th>
                 </tr>
                 @foreach($domains as $domain)
@@ -15,6 +16,7 @@
                         <th>{{ $domain->id }}</th>
                         <td><a href="{{ route('domains.show', $domain->id) }}">{{ $domain->name }}</a></td>
                         <td>{{ $checkResultsByDomain->get($domain->id)['created_at'] }}</td>
+                        <td>{{ __(sprintf('domain.check_status.%s', $checkResultsByDomain->get($domain->id)['check_status'])) }}</td>
                         <td>{{ $checkResultsByDomain->get($domain->id)['status_code'] }}</td>
                     </tr>
                 @endforeach
