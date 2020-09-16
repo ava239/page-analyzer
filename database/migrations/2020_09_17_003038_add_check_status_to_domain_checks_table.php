@@ -9,7 +9,7 @@ class AddCheckStatusToDomainChecksTable extends Migration
     public function up()
     {
         Schema::table('domain_checks', function (Blueprint $table) {
-            $table->enum('check_status', ['ok', 'check_error', 'queued'])->default('ok');
+            $table->string('check_status')->default('ok');
         });
     }
 
