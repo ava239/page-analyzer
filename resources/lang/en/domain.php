@@ -4,7 +4,8 @@ return [
     'check_status' => [
         'no_status' => '-',
         'queued' => 'Queued',
-        'check_error' => 'Check Error',
+        'request_error' => 'Request error',
+        'connection_error' => 'Connection error',
         'ok' => 'Ok',
     ],
 ];

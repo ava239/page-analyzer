@@ -37,14 +37,14 @@ class ProcessDomainCheck implements ShouldQueue
                     $dom->loadHtml($response->body());
                 }
                 $checkResult = [
-                    'check_status' => 'ok',
+                    'check_status' => $response->failed() ? 'request_error' : 'ok',
                     'status_code' => $response->status(),
                     'h1' => optional($dom->first('h1'))->text(),
                     'keywords' => optional($dom->first('meta[name="keywords"]'))->content,
                     'description' => optional($dom->first('meta[name="description"]'))->content,
                 ];
             } catch (ConnectionException $exception) {
-                $checkResult = ['check_status' => 'check_error'];
+                $checkResult = ['check_status' => 'connection_error'];
             }
             DB::table('domain_checks')->where('id', $this->domainCheck->id)->update($checkResult);
         }
