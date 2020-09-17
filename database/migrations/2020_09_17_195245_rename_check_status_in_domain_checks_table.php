@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class ChangeCheckStatusInDomainChecksTable extends Migration
+class RenameCheckStatusInDomainChecksTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,7 +14,7 @@ class ChangeCheckStatusInDomainChecksTable extends Migration
     public function up()
     {
         Schema::table('domain_checks', function (Blueprint $table) {
-            $table->string('check_status')->nullable()->default(null)->change();
+            $table->renameColumn('check_status', 'state');
         });
     }
 
@@ -26,7 +26,7 @@ class ChangeCheckStatusInDomainChecksTable extends Migration
     public function down()
     {
         Schema::table('domain_checks', function (Blueprint $table) {
-            $table->string('check_status')->default('ok')->change();
+            $table->renameColumn('state', 'check_status');
         });
     }
 }

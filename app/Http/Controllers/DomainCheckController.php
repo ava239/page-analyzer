@@ -13,7 +13,7 @@ class DomainCheckController extends Controller
         abort_unless($domain !== null, 404);
         $domainCheckData = [
             'domain_id' => $id,
-            'check_status' => 'queued',
+            'state' => 'new',
             'created_at' => now(),
             'updated_at' => now(),
         ];

@@ -41,7 +41,7 @@
             @foreach($checks as $check)
                 <tr>
                     <th>{{ $check->id }}</th>
-                    <th>{{  __(sprintf('domain.check_status.%s', $check->check_status)) }}</th>
+                    <th>{{  __(sprintf('domain.check_status.%s', $check->state)) }}</th>
                     <th>{{ $check->status_code }}</th>
                     <th class="text-wrap">{{ $check->h1 }}</th>
                     <th class="text-wrap">{{ $check->keywords }}</th>

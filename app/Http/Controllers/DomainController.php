@@ -26,7 +26,7 @@ class DomainController extends Controller
             return [
                 'created_at' => optional($domainCheck)->created_at,
                 'status_code' => optional($domainCheck)->status_code,
-                'check_status' => optional($domainCheck)->check_status ?? 'no_status',
+                'state' => optional($domainCheck)->state ?? 'no_state',
                 'domain_id' => $domain->id
             ];
         });

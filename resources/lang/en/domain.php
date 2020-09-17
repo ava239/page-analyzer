@@ -2,10 +2,10 @@
 
 return [
     'check_status' => [
-        'no_status' => '-',
-        'queued' => 'Queued',
-        'request_error' => 'Request error',
-        'connection_error' => 'Connection error',
-        'ok' => 'Ok',
+        'no_state' => '-',
+        'new' => 'Queued for check',
+        'in_progress' => 'In progress',
+        'error' => 'Check finished with error',
+        'success' => 'Finished',
     ],
 ];

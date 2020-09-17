@@ -28,7 +28,8 @@ class ProcessDomainCheck implements ShouldQueue
 
     public function handle()
     {
-        if ($this->domainCheck->check_status === 'queued') {
+        if ($this->domainCheck->check_status === 'new') {
+            DB::table('domain_checks')->where('id', $this->domainCheck->id)->update(['state' => 'in_progress']);
             $domain = DB::table('domains')->find($this->domainCheck->domain_id);
             $dom = new Document();
             try {
@@ -37,14 +38,14 @@ class ProcessDomainCheck implements ShouldQueue
                     $dom->loadHtml($response->body());
                 }
                 $checkResult = [
-                    'check_status' => $response->failed() ? 'request_error' : 'ok',
+                    'check_status' => 'success',
                     'status_code' => $response->status(),
                     'h1' => optional($dom->first('h1'))->text(),
                     'keywords' => optional($dom->first('meta[name="keywords"]'))->content,
                     'description' => optional($dom->first('meta[name="description"]'))->content,
                 ];
             } catch (ConnectionException $exception) {
-                $checkResult = ['check_status' => 'connection_error'];
+                $checkResult = ['check_status' => 'error'];
             }
             DB::table('domain_checks')->where('id', $this->domainCheck->id)->update($checkResult);
         }
