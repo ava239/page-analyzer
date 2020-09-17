@@ -2,15 +2,18 @@
 
 namespace App\Jobs;
 
+use App\Models\DomainCheck;
 use DiDom\Document;
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+
+use function App\Helpers\getStateMachine;
 
 class ProcessDomainCheck implements ShouldQueue
 {
@@ -23,31 +26,34 @@ class ProcessDomainCheck implements ShouldQueue
 
     public function __construct($domainCheckId)
     {
-        $this->domainCheck = DB::table('domain_checks')->find($domainCheckId);
+        $this->domainCheck = new DomainCheck();
+        $this->domainCheck->load($domainCheckId);
     }
 
     public function handle()
     {
-        if ($this->domainCheck->state === 'new') {
-            DB::table('domain_checks')->where('id', $this->domainCheck->id)->update(['state' => 'in_progress']);
-            $domain = DB::table('domains')->find($this->domainCheck->domain_id);
-            $dom = new Document();
+        $stateMachine = getStateMachine($this->domainCheck);
+        if ($stateMachine->can('start')) {
+            $stateMachine->apply('start');
             try {
+                $domain = DB::table('domains')->find($this->domainCheck->data->domain_id);
+
+                $dom = new Document();
+
                 $response = Http::get($domain->name);
                 if ($response->body() !== '') {
                     $dom->loadHtml($response->body());
                 }
                 $checkResult = [
-                    'state' => 'success',
                     'status_code' => $response->status(),
                     'h1' => optional($dom->first('h1'))->text(),
                     'keywords' => optional($dom->first('meta[name="keywords"]'))->content,
                     'description' => optional($dom->first('meta[name="description"]'))->content,
                 ];
-            } catch (ConnectionException $exception) {
-                $checkResult = ['state' => 'error'];
+                $stateMachine->apply('complete', ['result' => $checkResult]);
+            } catch (Exception $exception) {
+                $stateMachine->apply('error', ['error' => $exception]);
             }
-            DB::table('domain_checks')->where('id', $this->domainCheck->id)->update($checkResult);
         }
     }
 }

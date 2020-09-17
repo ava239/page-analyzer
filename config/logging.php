@@ -47,6 +47,12 @@ return [
             'level' => 'debug',
         ],
 
+        'domain_checks' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/domain_checks.log'),
+            'level' => 'info',
+        ],
+
         'daily' => [
             'driver' => 'daily',
             'path' => storage_path('logs/laravel.log'),
