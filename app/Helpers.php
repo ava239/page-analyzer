@@ -4,9 +4,12 @@ namespace App\Helpers;
 
 use App\Models\DomainCheck;
 use Finite\Event\TransitionEvent;
-use Finite\Loader\ArrayLoader;
+use Finite\State\State;
+use Finite\State\StateInterface;
 use Finite\StateMachine\StateMachine;
+use Finite\Transition\Transition;
 use Log;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 function normalizeUrl(string $url): string
 {
@@ -17,43 +20,47 @@ function normalizeUrl(string $url): string
 function getStateMachine(DomainCheck $domainCheck): StateMachine
 {
     $stateMachine = new StateMachine();
-    $loader = new ArrayLoader([
-        'class' => 'DomainCheck',
-        'states' => [
-            'new' => ['type' => 'initial'],
-            'in_progress' => ['type' => 'normal'],
-            'error' => ['type' => 'final'],
-            'success' => ['type' => 'final'],
-        ],
-        'transitions' => [
-            'start' => ['from' => ['new'], 'to' => 'in_progress'],
-            'error' => ['from' => ['in_progress'], 'to' => 'error', 'properties' => ['error' => null]],
-            'complete' => ['from' => ['in_progress'], 'to' => 'success', 'properties' => ['result' => []]],
-        ],
-        'callbacks' => [
-            'after' => [
-                [
-                    'to' => 'success',
-                    'do' => function (DomainCheck $object, TransitionEvent $event) {
-                        $params = $event->getProperties();
-                        $object->setResult($params['result']);
-                    }
-                ],
-                [
-                    'to' => 'error',
-                    'do' => function ($object, TransitionEvent $event) {
-                        $params = $event->getProperties();
-                        /** @var \Exception $error */
-                        $error = $params['error'];
-                        $message = $error->getMessage();
-                        Log::channel('domain_checks')->info($message);
-                    }
-                ]
-            ],
-        ]
-    ]);
-    $loader->load($stateMachine);
+
+    $stateMachine->addState(new State('new', StateInterface::TYPE_INITIAL));
+    $stateMachine->addState('in_progress');
+    $stateMachine->addState(new State('error', StateInterface::TYPE_FINAL));
+    $stateMachine->addState(new State('success', StateInterface::TYPE_FINAL));
+
+    $startTransition = new Transition('start', 'new', 'in_progress');
+    $stateMachine->addTransition($startTransition);
+
+    $getOptionsResolver = function ($options) {
+        $resolver = new OptionsResolver();
+        $resolver->setDefaults($options);
+        return $resolver;
+    };
+
+    $errorTransition = new Transition('error', 'in_progress', 'error', null, $getOptionsResolver(['error' => null]));
+    $stateMachine->addTransition($errorTransition);
+
+    $completeTransition = new Transition('complete', 'in_progress', 'success', null, $getOptionsResolver(['result' => []]));
+    $stateMachine->addTransition($completeTransition);
+
+    $stateMachine->getDispatcher()->addListener(
+        'finite.post_transition.complete',
+        function (TransitionEvent $event) use ($stateMachine) {
+            $params = $event->getProperties();
+            $stateMachine->getObject()->setResult($params['result']);
+        }
+    );
+    $stateMachine->getDispatcher()->addListener(
+        'finite.post_transition.error',
+        function (TransitionEvent $event) {
+            $params = $event->getProperties();
+            /** @var \Exception $error */
+            $error = $params['error'];
+            $message = $error->getMessage();
+            Log::channel('domain_checks')->info($message);
+        }
+    );
+
     $stateMachine->setObject($domainCheck);
     $stateMachine->initialize();
+
     return $stateMachine;
 }
