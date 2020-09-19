@@ -20,7 +20,6 @@ class DomainController extends Controller
             ->orderByDesc('created_at')
             ->get()
             ->keyBy('domain_id');
-
         $latestCheckResults = $domains->map(function ($domain) use ($latestDomainChecks) {
             $domainCheck = $latestDomainChecks->get($domain->id);
             return [
@@ -48,10 +47,10 @@ class DomainController extends Controller
         }
 
         $normalizedUrl = normalizeUrl($request->input('domain.name'));
-        $domain = DB::table('domains')->where('name', $normalizedUrl)->first();
 
+        $domain = DB::table('domains')->where('name', $normalizedUrl)->first();
         if ($domain) {
-            flash('Url already exists')->info();
+            flash(__('domain_exists'))->info();
             return redirect()->route('domains.show', $domain->id);
         }
 
@@ -60,7 +59,8 @@ class DomainController extends Controller
             'created_at' => now(),
             'updated_at' => now(),
         ]);
-        flash('Url has been added')->success();
+        flash(__('domain_added'))->success();
+
         return redirect()->route('domains.show', $id);
     }
 
@@ -68,10 +68,12 @@ class DomainController extends Controller
     {
         $domain = DB::table('domains')->where('id', $id)->first();
         abort_unless($domain !== null, 404);
+
         $domainChecks = DB::table('domain_checks')
             ->where('domain_id', $id)
             ->orderByDesc('created_at')
             ->get();
+
         return view('domains.show', ['domain' => $domain, 'checks' => $domainChecks]);
     }
 }
