@@ -17,7 +17,7 @@ function normalizeUrl(string $url): string
     return strtolower("{$parsedUrl['scheme']}://{$parsedUrl['host']}");
 }
 
-function getStateMachine(DomainCheck $domainCheck): StateMachine
+function makeStateMachine(DomainCheck $domainCheck): StateMachine
 {
     $stateMachine = new StateMachine();
 

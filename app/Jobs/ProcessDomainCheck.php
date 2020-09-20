@@ -13,7 +13,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 
-use function App\Helpers\getStateMachine;
+use function App\Helpers\makeStateMachine;
 
 class ProcessDomainCheck implements ShouldQueue
 {
@@ -32,7 +32,7 @@ class ProcessDomainCheck implements ShouldQueue
 
     public function handle()
     {
-        $stateMachine = getStateMachine($this->domainCheck);
+        $stateMachine = makeStateMachine($this->domainCheck);
         if (!$stateMachine->can('perform_check')) {
             return;
         }
