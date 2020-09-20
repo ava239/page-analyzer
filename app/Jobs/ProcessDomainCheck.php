@@ -33,27 +33,28 @@ class ProcessDomainCheck implements ShouldQueue
     public function handle()
     {
         $stateMachine = getStateMachine($this->domainCheck);
-        if ($stateMachine->can('start')) {
-            $stateMachine->apply('start');
-            try {
-                $domain = DB::table('domains')->find($this->domainCheck->data->domain_id);
+        if (!$stateMachine->can('perform_check')) {
+            return;
+        }
+        $stateMachine->apply('perform_check');
+        try {
+            $domain = DB::table('domains')->find($this->domainCheck->data->domain_id);
 
-                $dom = new Document();
+            $dom = new Document();
 
-                $response = Http::get($domain->name);
-                if ($response->body() !== '') {
-                    $dom->loadHtml($response->body());
-                }
-                $checkResult = [
-                    'status_code' => $response->status(),
-                    'h1' => optional($dom->first('h1'))->text(),
-                    'keywords' => optional($dom->first('meta[name="keywords"]'))->content,
-                    'description' => optional($dom->first('meta[name="description"]'))->content,
-                ];
-                $stateMachine->apply('complete', ['result' => $checkResult]);
-            } catch (Exception $exception) {
-                $stateMachine->apply('error', ['error' => $exception]);
+            $response = Http::get($domain->name);
+            if ($response->body() !== '') {
+                $dom->loadHtml($response->body());
             }
+            $checkResult = [
+                'status_code' => $response->status(),
+                'h1' => optional($dom->first('h1'))->text(),
+                'keywords' => optional($dom->first('meta[name="keywords"]'))->content,
+                'description' => optional($dom->first('meta[name="description"]'))->content,
+            ];
+            $stateMachine->apply('complete', ['result' => $checkResult]);
+        } catch (Exception $exception) {
+            $stateMachine->apply('error', ['error' => $exception]);
         }
     }
 }

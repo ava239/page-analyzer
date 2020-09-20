@@ -26,7 +26,7 @@ function getStateMachine(DomainCheck $domainCheck): StateMachine
     $stateMachine->addState(new State('error', StateInterface::TYPE_FINAL));
     $stateMachine->addState(new State('success', StateInterface::TYPE_FINAL));
 
-    $startTransition = new Transition('start', 'new', 'in_progress');
+    $startTransition = new Transition('perform_check', 'new', 'in_progress');
     $stateMachine->addTransition($startTransition);
 
     $getOptionsResolver = function ($options) {
@@ -35,11 +35,11 @@ function getStateMachine(DomainCheck $domainCheck): StateMachine
         return $resolver;
     };
 
-    $errorTransition = new Transition('error', 'in_progress', 'error', null, $getOptionsResolver(['error' => null]));
-    $stateMachine->addTransition($errorTransition);
+    $error = new Transition('error', 'in_progress', 'error', null, $getOptionsResolver(['error' => null]));
+    $stateMachine->addTransition($error);
 
-    $completeTransition = new Transition('complete', 'in_progress', 'success', null, $getOptionsResolver(['result' => []]));
-    $stateMachine->addTransition($completeTransition);
+    $complete = new Transition('complete', 'in_progress', 'success', null, $getOptionsResolver(['result' => []]));
+    $stateMachine->addTransition($complete);
 
     $stateMachine->getDispatcher()->addListener(
         'finite.post_transition.complete',
