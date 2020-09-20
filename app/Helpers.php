@@ -26,8 +26,8 @@ function makeStateMachine(DomainCheck $domainCheck): StateMachine
     $stateMachine->addState(new State('error', StateInterface::TYPE_FINAL));
     $stateMachine->addState(new State('success', StateInterface::TYPE_FINAL));
 
-    $startTransition = new Transition('perform_check', 'new', 'in_progress');
-    $stateMachine->addTransition($startTransition);
+    $performCheck = new Transition('perform_check', 'new', 'in_progress');
+    $stateMachine->addTransition($performCheck);
 
     $getOptionsResolver = function ($options) {
         $resolver = new OptionsResolver();
