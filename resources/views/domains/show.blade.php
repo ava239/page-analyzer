@@ -35,7 +35,6 @@
                 <th>H1</th>
                 <th>Keywords</th>
                 <th>Description</th>
-                <th>{{ __('check_status') }}</th>
                 <th>{{ __('created_at') }}</th>
             </tr>
             @foreach($checks as $check)
@@ -45,7 +44,6 @@
                     <th class="text-wrap">{{ $check->h1 }}</th>
                     <th class="text-wrap">{{ $check->keywords }}</th>
                     <th class="text-wrap">{{ $check->description }}</th>
-                    <th>{{  __(sprintf('domain.check_status.%s', $check->state)) }}</th>
                     <th>{{ $check->created_at }}</th>
                 </tr>
             @endforeach

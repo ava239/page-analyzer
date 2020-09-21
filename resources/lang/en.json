@@ -1,7 +1,6 @@
 {
     "domain_exists": "Domain already exists",
     "domain_added": "Url has been added",
-    "check_scheduled": "Domain check has been scheduled",
     "app_title": "Page Analyzer",
     "app_description": "Check web pages for free",
     "check": "Check",
@@ -12,10 +11,11 @@
     "id": "ID",
     "name": "Name",
     "last_check": "Last check",
-    "check_status": "Check Status",
     "status_code": "Status Code",
     "checks": "Checks",
     "run_check": "Run check",
     "created_at": "Created",
-    "updated_at": "Updated"
+    "updated_at": "Updated",
+    "site_checked": "Website has been checked",
+    "check_error": "Check error. Url could not be resolved"
 }
