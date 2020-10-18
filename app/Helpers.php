@@ -22,12 +22,12 @@ function makeStateMachine(DomainCheck $domainCheck): StateMachine
     $stateMachine = new StateMachine();
 
     $stateMachine->addState(new State('new', StateInterface::TYPE_INITIAL));
-    $stateMachine->addState('in_progress');
-    $stateMachine->addState(new State('error', StateInterface::TYPE_FINAL));
-    $stateMachine->addState(new State('success', StateInterface::TYPE_FINAL));
+    $stateMachine->addState('started');
+    $stateMachine->addState(new State('failed', StateInterface::TYPE_FINAL));
+    $stateMachine->addState(new State('performed', StateInterface::TYPE_FINAL));
 
-    $performCheck = new Transition('perform_check', 'new', 'in_progress');
-    $stateMachine->addTransition($performCheck);
+    $start = new Transition('start', 'new', 'started');
+    $stateMachine->addTransition($start);
 
     $getOptionsResolver = function ($options) {
         $resolver = new OptionsResolver();
@@ -35,21 +35,21 @@ function makeStateMachine(DomainCheck $domainCheck): StateMachine
         return $resolver;
     };
 
-    $error = new Transition('error', 'in_progress', 'error', null, $getOptionsResolver(['error' => null]));
-    $stateMachine->addTransition($error);
+    $fail = new Transition('fail', 'started', 'failed', null, $getOptionsResolver(['error' => null]));
+    $stateMachine->addTransition($fail);
 
-    $complete = new Transition('complete', 'in_progress', 'success', null, $getOptionsResolver(['result' => []]));
-    $stateMachine->addTransition($complete);
+    $perform = new Transition('finish', 'started', 'performed', null, $getOptionsResolver(['result' => []]));
+    $stateMachine->addTransition($perform);
 
     $stateMachine->getDispatcher()->addListener(
-        'finite.post_transition.complete',
+        'finite.post_transition.finish',
         function (TransitionEvent $event) use ($stateMachine) {
             $params = $event->getProperties();
             $stateMachine->getObject()->setResult($params['result']);
         }
     );
     $stateMachine->getDispatcher()->addListener(
-        'finite.post_transition.error',
+        'finite.post_transition.fail',
         function (TransitionEvent $event) {
             $params = $event->getProperties();
             /** @var \Exception $error */

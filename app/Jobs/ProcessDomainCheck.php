@@ -33,10 +33,10 @@ class ProcessDomainCheck implements ShouldQueue
     public function handle()
     {
         $stateMachine = makeStateMachine($this->domainCheck);
-        if (!$stateMachine->can('perform_check')) {
+        if (!$stateMachine->can('start')) {
             return;
         }
-        $stateMachine->apply('perform_check');
+        $stateMachine->apply('start');
         try {
             $domain = DB::table('domains')->find($this->domainCheck->data->domain_id);
 
@@ -52,9 +52,9 @@ class ProcessDomainCheck implements ShouldQueue
                 'keywords' => optional($dom->first('meta[name="keywords"]'))->content,
                 'description' => optional($dom->first('meta[name="description"]'))->content,
             ];
-            $stateMachine->apply('complete', ['result' => $checkResult]);
+            $stateMachine->apply('finish', ['result' => $checkResult]);
         } catch (Exception $exception) {
-            $stateMachine->apply('error', ['error' => $exception]);
+            $stateMachine->apply('fail', ['error' => $exception]);
         }
     }
 }
