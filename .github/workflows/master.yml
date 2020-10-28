@@ -7,6 +7,7 @@ on:
   push:
     branches:
       - 'master'
+      - 'statemachine'
 
 jobs:
   build:
